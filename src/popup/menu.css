@@ -1,0 +1,87 @@
+:root {
+  --color-bg: #ffffff;
+  --color-fg: #1E1E1E;
+  --color-power-button: #509F00;
+  --color-power-button-hover: #407f00;
+  --color-power-button-disabled: #736C76;
+  --color-power-button-disabled-hover: #CCCCCC;
+}
+#power-button[data-button-is-on='false'] svg path {
+    stroke: var(--color-power-button-disabled);
+  } 
+#power-button[data-button-is-on='false']:hover svg path {  /*Why is this breaking chrome */
+  stroke: var(--color-power-button-disabled-hover); 
+}
+@font-face {
+  font-family: "Messina Sans";
+  src: url("fonts/MessinaSansWeb-Regular.woff") format('woff');
+}
+@media (prefers-color-scheme: dark) {  /* https://dev.to/whitep4nth3r/light-and-dark-mode-in-just-14-lines-of-css-424e */
+  :root {
+    --color-bg: #1E1E1E;
+    --color-fg: #ffffff;
+    --color-power-button-disabled: #E9E7EA;
+    --color-power-button-disabled-hover: #a3a1a3;
+  }
+  #power-button[data-button-is-on='false'] svg path {
+    stroke: var(--color-power-button-disabled);
+  } 
+  #power-button[data-button-is-on='false']:hover svg path { 
+    stroke: var(--color-power-button-disabled-hover); 
+  }
+}
+body {
+  align-items: flex-start;
+  background-color: var(--color-bg);
+  border-radius: 1px;
+  color: var(--color-fg);
+  display: flex;
+  flex-direction: column;
+  font-family: 'Messina Sans';
+  font-style: normal;
+  font-weight: 600;        
+  padding-bottom: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 30px;
+  width: 250px;
+}
+#extension-name {
+  align-self: stretch; 
+  /* border-style: dotted; */
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+  line-height: 140%;
+  text-align: center;
+}
+#option-container {
+  align-items: center;
+  align-self: stretch;
+  /* border-color: #509F00;
+  border-style: dotted; */
+  display: flex;
+  flex-direction: row;
+  font-size: 14px;
+  height: 30px;
+  justify-content: space-between;
+}
+#power-button {
+  align-items: center;
+  align-self: center;
+  background-color: transparent;
+  border: none;
+  /* border-style: dotted; */
+  display: flex;
+  gap: 10px;
+  height: 104px;
+  justify-content: center;
+  cursor: pointer;
+  width: 96px;
+}
+#power-button:hover svg path {
+  stroke: var(--color-power-button-hover);
+}
+.power-icon-path {
+  stroke: var(--color-power-button);
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="menu.css">
+    <script type="application/javascript" src="/browser-polyfill.js"></script>
+    <script src="menu.js"></script>
+  </head>
+  <body>
+    <div id="extension-name">Jira Dev Cap Reminders</div>
+    <div style="height: 20px; align-self: stretch;"></div>
+    <button id="power-button" data-button-is-on="true">
+      <svg id="power-icon" 
+        width="86" 
+        height="94"
+        viewBox="0 0 86 94" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg">
+        <path d="M69.5208 24.3335C74.7641 29.5785 78.3344 36.2603 79.7804 43.5343C81.2263 50.8082 80.483 58.3476 77.6443 65.1991C74.8057 72.0506 69.9992 77.9066 63.8326 82.0266C57.6661 86.1466 50.4163 88.3457 43 88.3457C35.5837 88.3457 28.334 86.1466 22.1674 82.0266C16.0008 77.9066 11.1944 72.0506 8.35571 65.1991C5.51706 58.3476 4.77372 50.8082 6.21967 43.5343C7.66563 36.2603 11.2359 29.5785 16.4792 24.3335" 
+          class="power-icon-path"  
+          stroke-width="10" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+        <path d="M43.021 5V46.6667" 
+          class="power-icon-path"    
+          stroke-width="10" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div style="height: 40px; align-self: stretch;"></div>
+    <div id="option-container">
+      <div>Select alert color</div>
+      <select id="color-selector" name="alertColor" class="option-dropdown">
+        <option class="color-option" value="black">Black</option>
+        <option class="color-option" value="green">Green</option>
+        <option class="color-option" value="blue">Blue</option>
+        <option class="color-option" value="purple">Purple</option>
+        <option class="color-option" value="red">Red</option>
+      </select>
+    </div>
+    <div id="option-container">
+      <div>Select alert intensity</div>
+      <select id="intensity-selector" name="alertIntensity" class="option-dropdown">
+        <option class="intensity-option" value="1">1</option>
+        <option class="intensity-option" value="2">2</option>
+        <option class="intensity-option" value="3">3</option>
+        <option class="intensity-option" value="4">4</option>
+      </select>
+    </div>
+  </body>
+</html>
