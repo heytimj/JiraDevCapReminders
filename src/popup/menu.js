@@ -17,6 +17,7 @@ function manageExtensionIcon(isActive) {
 }
 
 function addChangeListenersToDropdowns() {
+  console.log('DevCapReminders - adding change listeners to menu dropdowns');
   let optionDropdowns = document.querySelectorAll('.option-dropdown');
   optionDropdowns.forEach((elem) => {
     elem.addEventListener("change", (e) => {
@@ -27,6 +28,7 @@ function addChangeListenersToDropdowns() {
 }
 
 function addClickListenerToPowerButton() {
+  console.log('DevCapReminders - adding click listener to power button');
   let powerButton = document.getElementById('power-button');
   powerButton.addEventListener("click", handlePowerButtonClick);
 }
@@ -47,6 +49,7 @@ async function handlePowerButtonClick (clickEvent) {
 }
 
 async function restoreSettings() {
+  console.log('DevCapReminders - restoring menu settings');
   let currentSettings = await browser.storage.local.get(['extensionIsEnabled', 'alertColor', 'alertIntensity']);
   const alertColor = currentSettings.alertColor;
   const alertIntensity = currentSettings.alertIntensity;

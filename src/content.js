@@ -127,8 +127,8 @@ function startObservingDomMutations() {
 function settingsListener(changes, area)  {
   console.log('DevCapReminders - changes in settings detected');
   const changedItems = Object.keys(changes);
-  console.log(changes);
-  console.log(changedItems);
+  console.log('DevCapReminders - changes:', changes);
+  console.log('DevCapReminders - changedItems:', changedItems);
   for (const item of changedItems) {
     if (item == 'extensionIsEnabled' && changes[item].newValue == false) {
       removePageChanges();
