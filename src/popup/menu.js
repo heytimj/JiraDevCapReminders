@@ -16,6 +16,18 @@ function manageExtensionIcon(isActive) {
   }
 }
 
+function getTargetElements() {
+  const powerButtonElement = document.getElementById('power-button');
+  const colorSelectorElement = document.getElementById('color-selector');
+  const intensitySelectorElement = document.getElementById('intensity-selector');
+  const targetElements = {
+    powerButton: powerButtonElement,
+    colorSelector: colorSelectorElement,
+    intensitySelector: intensitySelectorElement
+  };
+  return targetElements;
+}
+
 function addChangeListenersToDropdowns() {
   console.log('DevCapReminders - adding change listeners to menu dropdowns');
   let optionDropdowns = document.querySelectorAll('.option-dropdown');
@@ -29,16 +41,16 @@ function addChangeListenersToDropdowns() {
 
 function addClickListenerToPowerButton() {
   console.log('DevCapReminders - adding click listener to power button');
-  let powerButton = document.getElementById('power-button');
+  const powerButton = getTargetElements().powerButton;
   powerButton.addEventListener("click", handlePowerButtonClick);
 }
 
 async function handlePowerButtonClick (clickEvent) {
   console.log('DevCapReminders - power button clicked');
-  let powerButton = document.getElementById('power-button');  // need to figure out how to pass this in from addClickListenerToPowerButton
-  let gettingItem = await browser.storage.local.get('extensionIsEnabled');
-  let extensionIsEnabledPrevious = gettingItem.extensionIsEnabled;
-  let extensionIsEnabledNew = ! extensionIsEnabledPrevious;
+  const powerButton = getTargetElements().powerButton;
+  const currentSettings = await browser.storage.local.get(null);  // gets everything in storage
+  const extensionIsEnabledPrevious = currentSettings.extensionIsEnabled;
+  const extensionIsEnabledNew = ! extensionIsEnabledPrevious;
   let newSettingPayload = {};
   newSettingPayload['extensionIsEnabled'] = extensionIsEnabledNew;
   browser.storage.local.set({
@@ -46,15 +58,23 @@ async function handlePowerButtonClick (clickEvent) {
   });
   powerButton.setAttribute('data-button-is-on', extensionIsEnabledNew);
   manageExtensionIcon(extensionIsEnabledNew);
+  balanceOptionStates();
 }
 
 async function restoreSettings() {
   console.log('DevCapReminders - restoring menu settings');
-  let currentSettings = await browser.storage.local.get(['extensionIsEnabled', 'alertColor', 'alertIntensity']);
+  const currentSettings = await browser.storage.local.get(null);
+  console.log('DevCapReminders - current settings:', currentSettings);
+  const extensionIsEnabled = currentSettings.extensionIsEnabled;
   const alertColor = currentSettings.alertColor;
   const alertIntensity = currentSettings.alertIntensity;
-  document.getElementById('color-selector').value = alertColor;
-  document.getElementById('intensity-selector').value = alertIntensity;
+  const powerButton = getTargetElements().powerButton;
+  powerButton.setAttribute('data-button-is-on', extensionIsEnabled);
+  const colorSelector = getTargetElements().colorSelector;
+  colorSelector.value = alertColor;
+  const intensitySelector = getTargetElements().intensitySelector;
+  intensitySelector.value = alertIntensity;
+  balanceOptionStates();
 }
 
 function saveNewDropdownSetting(dropdown) {
@@ -62,10 +82,24 @@ function saveNewDropdownSetting(dropdown) {
   newSettingPayload = {};
   newSettingPayload[dropdown.name] = dropdown.value;
   browser.storage.local.set(newSettingPayload);
-  if (dropdown.id == 'intensity-selector' && dropdown.value == '1') {
-    document.getElementById('color-selector').setAttribute('disabled', true);
+  balanceOptionStates();
+}
+
+function balanceOptionStates() {
+  const targetElements = getTargetElements();
+  const powerButton = targetElements.powerButton;
+  const powerButtonIsOn = powerButton.getAttribute('data-button-is-on');
+  const colorSelector = targetElements.colorSelector;
+  const intensitySelector = targetElements.intensitySelector;
+  if (powerButtonIsOn == 'false') {
+    colorSelector.setAttribute('disabled', true);
+    intensitySelector.setAttribute('disabled', true);
+  } else if (powerButtonIsOn == 'true' && intensitySelector.value == '1') {
+    colorSelector.setAttribute('disabled', true);
+    intensitySelector.removeAttribute('disabled');
   } else {
-    document.getElementById('color-selector').removeAttribute('disabled');
+    colorSelector.removeAttribute('disabled');
+    intensitySelector.removeAttribute('disabled');
   }
 }
 

@@ -4,7 +4,7 @@ if (typeof browser === "undefined") {
 
 async function setDefaultSettings() {
   console.log('DevCapReminders - configuring default settings (if none exist)');
-  let testValue = await browser.storage.local.get('extensionIsEnabled').extensionIsEnabled;
+  const testValue = await browser.storage.local.get('extensionIsEnabled').extensionIsEnabled;
   if (typeof testValue === 'undefined') {
     await browser.storage.local.set({
       extensionIsEnabled: true,
@@ -32,7 +32,7 @@ async function injectContentIntoExistingPages(manifest) {
 
 browser.runtime.onInstalled.addListener(async (details) => {
   console.log('DevCapReminders - installing extension');
-  let manifest = await browser.runtime.getManifest();
+  const manifest = await browser.runtime.getManifest();
   try {
     await injectContentIntoExistingPages(manifest);
   } catch { 
