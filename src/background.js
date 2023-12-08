@@ -2,18 +2,21 @@ if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
-async function setDefaultSettings() {
+async function setDefaultSettings(manifest) {
   console.log('DevCapReminders - configuring default settings (if none exist)');
+  const extensionVersionNumber = manifest.version;
   const testValue = await browser.storage.local.get('extensionIsEnabled').extensionIsEnabled;
   if (typeof testValue === 'undefined') {
     await browser.storage.local.set({
       extensionIsEnabled: true,
       alertColor: 'green',
       alertIntensity: '3',
-      firstRun: true
+      extensionVersionNumber: extensionVersionNumber
     });
   } else {
-    // Don't overwrite existing settings
+    await browser.storage.local.set({
+      extensionVersionNumber: extensionVersionNumber
+    });
   }
 }
 
@@ -39,5 +42,5 @@ browser.runtime.onInstalled.addListener(async (details) => {
     // Uh oh. Looks like the user will be foreced to reload any 
     // existing pages for the  time being.
   }
-  await setDefaultSettings();
+  await setDefaultSettings(manifest);
 });

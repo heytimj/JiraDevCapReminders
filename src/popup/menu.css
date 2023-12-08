@@ -16,6 +16,11 @@
   font-family: "Messina Sans";
   src: url("fonts/MessinaSansWeb-Regular.woff") format('woff');
 }
+@font-face {
+  font-family: "Messina Sans Thin";
+  font-style: normal;
+  src: url("fonts/MessinaSansWeb-Thin.woff") format('woff');
+}
 @media (prefers-color-scheme: dark) {  /* https://dev.to/whitep4nth3r/light-and-dark-mode-in-just-14-lines-of-css-424e */
   :root {
     --color-bg: #1E1E1E;
@@ -30,6 +35,12 @@
     stroke: var(--color-power-button-disabled-hover); 
   }
 }
+a {
+  color: var(--color-fg);
+}
+a:hover {
+  color: var(--color-power-button-disabled-hover);
+}
 body {
   align-items: flex-start;
   background-color: var(--color-bg);
@@ -39,12 +50,21 @@ body {
   flex-direction: column;
   font-family: 'Messina Sans';
   font-style: normal;
-  font-weight: 600;        
-  padding-bottom: 20px;
+  padding-bottom: 5px;
   padding-left: 30px;
   padding-right: 30px;
   padding-top: 30px;
   width: 250px;
+}
+#extension-info-container {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  font-family: 'Messina Sans Thin';
+  font-size: 11px;
+  flex-direction: row;
+  height: 15px;
+  justify-content: center;
 }
 #extension-name {
   align-self: stretch; 
@@ -55,7 +75,7 @@ body {
   line-height: 140%;
   text-align: center;
 }
-#option-container {
+.option-container {
   align-items: center;
   align-self: stretch;
   /* border-color: #509F00;

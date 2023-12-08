@@ -68,12 +68,14 @@ async function restoreSettings() {
   const extensionIsEnabled = currentSettings.extensionIsEnabled;
   const alertColor = currentSettings.alertColor;
   const alertIntensity = currentSettings.alertIntensity;
+  const extensionVersionNumber = currentSettings.extensionVersionNumber;
   const powerButton = getTargetElements().powerButton;
   powerButton.setAttribute('data-button-is-on', extensionIsEnabled);
   const colorSelector = getTargetElements().colorSelector;
   colorSelector.value = alertColor;
   const intensitySelector = getTargetElements().intensitySelector;
   intensitySelector.value = alertIntensity;
+  document.getElementById('version-number').innerText = extensionVersionNumber;
   balanceOptionStates();
 }
 
