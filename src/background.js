@@ -2,22 +2,21 @@ if (typeof browser === "undefined") {
   var browser = chrome;
 }
 
-async function setDefaultSettings(manifest) {
-  console.log('DevCapReminders - configuring default settings (if none exist)');
-  const extensionVersionNumber = manifest.version;
-  const testValue = await browser.storage.local.get('extensionIsEnabled').extensionIsEnabled;
-  if (typeof testValue === 'undefined') {
-    await browser.storage.local.set({
-      extensionIsEnabled: true,
-      alertColor: 'green',
-      alertIntensity: '3',
-      extensionVersionNumber: extensionVersionNumber
-    });
-  } else {
-    await browser.storage.local.set({
-      extensionVersionNumber: extensionVersionNumber
-    });
-  }
+async function setDefaultSettings(version) {
+  console.log('DevCapReminders - configuring default settings');
+  await browser.storage.local.set({
+    extensionIsEnabled: true,
+    alertColor: 'green',
+    alertIntensity: '3',
+    extensionVersionNumber: version
+  });
+}
+
+async function updateStoredVersionNumber(version) {
+  console.log('DevCapReminders - updating stored extension version number');
+  await browser.storage.local.set({
+    extensionVersionNumber: version
+  });
 }
 
 async function injectContentIntoExistingPages(manifest) {
@@ -34,13 +33,27 @@ async function injectContentIntoExistingPages(manifest) {
 }
 
 browser.runtime.onInstalled.addListener(async (details) => {
-  console.log('DevCapReminders - installing extension');
+  console.log('DevCapReminders - installing or updating extension');
   const manifest = await browser.runtime.getManifest();
+  const version = manifest.version;
   try {
     await injectContentIntoExistingPages(manifest);
   } catch { 
-    // Uh oh. Looks like the user will be foreced to reload any 
+    // Uh oh. Looks like the user will be forced to reload any 
     // existing pages for the  time being.
   }
-  await setDefaultSettings(manifest);
+  switch(details.reason) {
+    case 'install':
+      console.log('DevCapReminders - installing version', version);
+      await setDefaultSettings(version);
+      break
+    case 'update':
+      console.log('DevCapReminders - updating from ', details.previousVersion, 'to', version);
+      await updateStoredVersionNumber(version);  // Will need to modify this in the future if an update intorduces any new settings
+      break
+    case 'browser_update':
+    case 'chrome_update':
+      console.log('DevCapReminders - browser update detected. Hopefully nothing broke');
+      break
+  }
 });
