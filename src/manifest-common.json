@@ -1,7 +1,7 @@
 {
   "name": "Jira Dev Cap Reminders",
   "description": "Configurable on-page reminders to log work on 'Forward Development' Jira tickets",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "icons": {
     "48": "icons/icon_active.png"
   },

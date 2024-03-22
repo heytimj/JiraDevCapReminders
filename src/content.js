@@ -1,13 +1,8 @@
 async function getCurrentSettings() {
   console.log('DevCapReminders - getting current settings');
-  const settingNamesToGet = ['extensionIsEnabled', 'alertColor', 'alertIntensity', 'firstRun']
-  const currentSettings = await browser.storage.local.get(settingNamesToGet);
+  const currentSettings = await chrome.storage.local.get(null);
   console.log('DevCapReminders - current settings:', currentSettings);
-  return {
-    extensionIsEnabled: currentSettings.extensionIsEnabled,
-    alertColor: currentSettings.alertColor,
-    alertIntensity: currentSettings.alertIntensity
-  };
+  return currentSettings;
 }
 
 function getTargetElements() {
@@ -29,11 +24,9 @@ function getTargetElements() {
   return targetElements;
 }
 
-async function changePageDecider() {
+async function changePageDecider(currentSettings, targetElements) {
   console.log('DevCapReminders - deciding whether or not to change the page');
-  const currentSettings = await getCurrentSettings();
   const extensionIsEnabled = currentSettings.extensionIsEnabled;
-  const targetElements = getTargetElements();
   const devBucketValue = targetElements.devBucketValue;
   if (extensionIsEnabled && devBucketValue == 'Forward Development') {
     console.log('DevCapReminders - the page needs to be changed');
@@ -45,13 +38,14 @@ async function changePageDecider() {
   }  
 }
 
-function changePage(targetElements, currentSettings) {
+async function changePage(targetElements, currentSettings) {
   console.log('DevCapReminders - changing page');
+  disconnectDOMMutationObserver();
   const newFontSize = '16px';
   const alertColor = currentSettings.alertColor;
   const alertIntensity = currentSettings.alertIntensity; 
   const newBorderValue = (px, ac) => { return px + ' dashed ' + ac };
-  removePageChanges();  // Start fresh because switching from 3/4 to 1/2 requires some changes to be removed.
+  removePageChanges(targetElements);  // Start fresh because switching from 3/4 to 1/2 requires some changes to be removed.
   // Apply common changes which affect all alert intensities
   console.log('DevCapReminders - applying new page changes');
   targetElements.devBucketElement.style.fontWeight = "bold";
@@ -82,12 +76,11 @@ function changePage(targetElements, currentSettings) {
       targetElements.workLogElement.style.border = newBorder;
       break;
   }
-  startObservingDomMutations();
+  setTimeout(startObservingDomMutations, 1000);
 }
 
-function removePageChanges() {
-  console.log('DevCapReminders - removing page changes');
-  const targetElements = getTargetElements();
+function removePageChanges(targetElements) {
+  console.log('DevCapReminders - removing existing page changes');
   targetElements.devBucketElement.style.fontWeight = 'normal';
   targetElements.devBucketValueElement.style.fontWeight = 'normal';
   targetElements.devBucketElement.style.fontSize = '14px';
@@ -100,14 +93,15 @@ function removePageChanges() {
 const domMutationObserver = new MutationObserver(domMutationCallback); // https://stackoverflow.com/a/35312379
 startObservingDomMutations(domMutationObserver, document);
 
-function domMutationCallback(mutations, observer) {
+async function domMutationCallback(mutations, observer) {
   console.log('DevCapReminders - DOM mutations detected');
-  for (const mutation of mutations) {
-    console.log(mutation);
-  }
-  console.log('DevCapReminders - disconnecting DOM mutation observer');
-  domMutationObserver.disconnect();
-  changePageDecider();
+  // for (const mutation of mutations) {
+    // console.log('DevCapReminders - mutation:', mutation);
+  // }
+  disconnectDOMMutationObserver();
+  currentSettings = await getCurrentSettings();
+  targetElements = await getTargetElements();
+  changePageDecider(currentSettings, targetElements);
 }
 
 function startObservingDomMutations() {
@@ -119,29 +113,29 @@ function startObservingDomMutations() {
   });
 }
 
+function disconnectDOMMutationObserver() {
+  console.log('DevCapReminders - disconnecting DOM mutation observer');
+  domMutationObserver.disconnect();
+}
+
 // This fallback isn't needed anymore since MutationObserver code was fixed. Leaving it here for nostalgia.
 // document.addEventListener('click', () => {
 //   setTimeout(changePageDecider, 1800);  // Won't work without the setTimeout wrapper - https://stackoverflow.com/a/58819372
 // });
 
-function settingsListener(changes, area)  {
+async function settingsListener(changes, area)  {
   console.log('DevCapReminders - changes in settings detected');
-  const changedItems = Object.keys(changes);
-  console.log('DevCapReminders - changes:', changes);
-  console.log('DevCapReminders - changedItems:', changedItems);
-  for (const item of changedItems) {
-    if (item == 'extensionIsEnabled' && changes[item].newValue == false) {
-      removePageChanges();
-    } else {
-      changePageDecider();
-    }
-    // console.log(`${item} has changed:`);
-    // console.log("Old value: ", changes[item].oldValue);
-    // console.log("New value: ", changes[item].newValue);
+  console.log('DevCapReminders - settings changes:', changes);
+  if ('extensionIsEnabled' in changes && changes.extensionIsEnabled.newValue == false) {
+    console.log('DevCapReminders - user has disabled the extension')
+    disconnectDOMMutationObserver();
+    targetElements = await getTargetElements();
+    removePageChanges(targetElements);
+  } else {
+    currentSettings = await getCurrentSettings();
+    targetElements = await getTargetElements();
+    changePageDecider(currentSettings, targetElements);
   }
 }
 
-if (typeof browser === "undefined") {
-  var browser = chrome;
-}
-browser.storage.onChanged.addListener(settingsListener);
+chrome.storage.onChanged.addListener(settingsListener);
