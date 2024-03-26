@@ -7,6 +7,6 @@
     "default_popup": "popup/menu.html"
   },
   "host_permissions": [
-    "https://jira.q2ebanking.com/*"
+    "https://jira.q2ebanking.com/browse/*"
   ]
 }
