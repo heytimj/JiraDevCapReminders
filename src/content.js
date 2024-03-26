@@ -24,8 +24,10 @@ function getTargetElements() {
   return targetElements;
 }
 
-async function changePageDecider(currentSettings, targetElements) {
+async function changePageDecider() {
   console.log('DevCapReminders - deciding whether or not to change the page');
+  currentSettings = await getCurrentSettings();
+  targetElements = await getTargetElements();
   const extensionIsEnabled = currentSettings.extensionIsEnabled;
   const devBucketValue = targetElements.devBucketValue;
   if (extensionIsEnabled && devBucketValue == 'Forward Development') {
@@ -38,7 +40,7 @@ async function changePageDecider(currentSettings, targetElements) {
   }  
 }
 
-async function changePage(targetElements, currentSettings) {
+function changePage(targetElements, currentSettings) {
   console.log('DevCapReminders - changing page');
   disconnectDOMMutationObserver();
   const newFontSize = '16px';
@@ -93,15 +95,13 @@ function removePageChanges(targetElements) {
 const domMutationObserver = new MutationObserver(domMutationCallback); // https://stackoverflow.com/a/35312379
 startObservingDomMutations(domMutationObserver, document);
 
-async function domMutationCallback(mutations, observer) {
+function domMutationCallback(mutations, observer) {
   console.log('DevCapReminders - DOM mutations detected');
   // for (const mutation of mutations) {
     // console.log('DevCapReminders - mutation:', mutation);
   // }
   disconnectDOMMutationObserver();
-  currentSettings = await getCurrentSettings();
-  targetElements = await getTargetElements();
-  changePageDecider(currentSettings, targetElements);
+  changePageDecider();
 }
 
 function startObservingDomMutations() {
@@ -132,9 +132,7 @@ async function settingsListener(changes, area)  {
     targetElements = await getTargetElements();
     removePageChanges(targetElements);
   } else {
-    currentSettings = await getCurrentSettings();
-    targetElements = await getTargetElements();
-    changePageDecider(currentSettings, targetElements);
+    changePageDecider();
   }
 }
 
