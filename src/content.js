@@ -5,12 +5,13 @@ async function getCurrentSettings() {
   return currentSettings;
 }
 
-function getTargetElements() {
+async function getTargetElements() {
   console.log('DevCapReminders - getting target elements');
   const devBucketContainer = document.getElementById('rowForcustomfield_13013');
   const devBucketElement = document.querySelector("label[for='customfield_13013']");
   const devBucketValueElement = document.getElementById('customfield_13013-val');
   const devBucketValue = devBucketValueElement.textContent.trim();
+  console.log('DevCapReminders - Dev Bucket value:', devBucketValue);
   const workLogElement = document.getElementById('worklog-by-user-table');
   const logWorkLink = document.getElementById('add-worklog-issue-right-panel-link');
   const targetElements = {
